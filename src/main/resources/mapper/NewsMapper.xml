@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.news.dao.NewsMapper">
+    <resultMap id="BaseResultMap" type="com.cai.news.beans.News">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="st" jdbcType="VARCHAR" property="st"/>
+        <result column="author" jdbcType="VARCHAR" property="author"/>
+        <result column="browser_count" jdbcType="INTEGER" property="browserCount"/>
+        <result column="picture" jdbcType="VARCHAR" property="picture"></result>
+        <result column="title" jdbcType="VARCHAR" property="title"></result>
+        <association property="newsType" javaType="com.cai.news.beans.NewsType">
+            <id column="news_type_id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+    </resultMap>
+    <update id="updateByPrimaryKey" parameterType="com.cai.news.beans.News">
+        UPDATE news
+        set
+        title=#{title},
+        st=#{st},
+        author=#{author},
+        news_type_id=#{newsType.id},
+        browser_count=#{browserCount},
+        picture=#{picture}
+        where
+        id=#{id}
+    </update>
+    <select id="selectById" resultMap="BaseResultMap">
+    SELECT
+     news.id as id,
+    news.title as title,
+    news.st as st,
+    news.author as author,
+    news_type.id as news_type_id,
+    news_type.name as name,
+    news.browser_count as brower_count,
+    news.picture as picture
+    from news,news_type
+     WHERE
+     news_type_id=news_type.id
+     AND
+     news.id=#{id};
+  </select>
+    <delete id="deleteById">
+    delete from news where id=#{id}
+  </delete>
+    <select id="selectAll" resultMap="BaseResultMap">
+    SELECT
+    news.id as id,
+    news.title as title,
+    news.st as st,
+    news.author as author,
+    news_type.id as news_type_id,
+    news_type.name as name,
+    news.browser_count as brower_count,
+    news.picture as picture
+    from news,news_type
+    where news.news_type_id=news_type.id
+  </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.cai.news.beans.News">
+    insert into news
+    (title,st,author,news_type_id,browser_count,picture)
+    values
+    (#{title},#{st},#{author},#{newsType.id},#{browserCount},#{picture})
+  </insert>
+    <select id="selectByNewsTypeAnd1to3" resultMap="BaseResultMap">
+    SELECT * from news
+    where news_type_id=#{newsTypeId}
+    ORDER by id desc
+    limit 0,3
+  </select>
+    <select id="selectByNewsTypeAnd4to6" resultMap="BaseResultMap">
+    SELECT * from news
+    where news_type_id=#{newsTypeId}
+    ORDER by id desc
+    limit 3,3
+  </select>
+    <!--不限制数量会不会传输的太多了 -->
+    <select id="selectByNewsTypeId" resultMap="BaseResultMap">
+    SELECT
+    news.id as id,
+    news.title as title,
+    news.st as st,
+    news.author as author,
+    news_type.id as news_type_id,
+    news_type.name as name,
+    news.browser_count as brower_count,
+    news.picture as picture
+    from news,news_type
+    where news.news_type_id=news_type.id
+    and news_type_id=#{newsTypeId}
+  </select>
+    <select id="selectByNewsTop10" resultMap="BaseResultMap">
+      SELECT
+    news.id as id,
+    news.title as title,
+    news.st as st,
+    news.author as author,
+    news_type.id as news_type_id,
+    news_type.name as name,
+    news.browser_count as brower_count,
+    news.picture as picture
+    from news,news_type
+    where news.news_type_id=news_type.id
+    ORDER by id DESC
+    limit 0,10
+  </select>
+    <select id="selectByNewsTypeIdAndBrowserTop10" resultMap="BaseResultMap">
+   SELECT
+    news.id as id,
+    news.title as title,
+    news.st as st,
+    news.author as author,
+    news_type.id as news_type_id,
+    news_type.name as name,
+    news.browser_count as brower_count,
+    news.picture as picture
+    from news,news_type
+    where news.news_type_id=news_type.id
+    and news_type_id=#{newsTypeId}
+    ORDER by browser_count DESC
+    limit 0,10
+  </select>
+</mapper>
